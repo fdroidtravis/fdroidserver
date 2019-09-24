@@ -12,6 +12,8 @@ matrix:
       osx_image: xcode10.3
       env: ANDROID_SDK_ROOT=/usr/local/share/android-sdk
       env: ANDROID_HOME=/usr/local/share/android-sdk
+    - os: windows
+      language: bash
 
 android:
   components:
@@ -27,6 +29,52 @@ android:
 #   https://opsech.io/posts/2017/Jun/09/openjdk-april-2017-security-update-131-8u131-and-md5-signed-jars.html
 # * mercurial is unused and requires Python 2.x
 install:
+  # Windows MSYS
+  - test "$TRAVIS_OS_NAME" = "windows" && choco install --no-progress -y python3
+  - test "$TRAVIS_OS_NAME" = "windows" && choco install --no-progress -y jdk8
+  - test "$TRAVIS_OS_NAME" = "windows" && choco install --no-progress -y android-sdk
+  - |-
+    if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+        set -x
+        export ANDROID_HOME="/c/Android/android-sdk"
+        export sdkmanager="$ANDROID_HOME/tools/bin/sdkmanager.bat"
+        export JAVA_HOME=`ls -1d '/c/Program Files/Java/'*`
+        export PATH="/c/python38:/c/python38/Scripts:$JAVA_HOME/bin:$PATH"
+        echo $PATH
+        which jarsigner || true
+        which keytool || true
+        which rsync || true
+
+        export AAPT_VERSION=`sed -n "s,^MINIMUM_AAPT_VERSION\s*=\s*['\"]\(.*\)[['\"],\1,p" fdroidserver/common.py`
+        mkdir -p "$ANDROID_HOME/licenses"
+        echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+        echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_HOME/licenses/android-sdk-license"
+        echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" >> "$ANDROID_HOME/licenses/android-sdk-license"
+        echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+        echo y | $sdkmanager "platform-tools"
+        echo y | $sdkmanager "build-tools;$AAPT_VERSION" > /dev/null
+        echo y | $sdkmanager "platforms;android-23" > /dev/null
+
+        python -m ensurepip
+        python -m pip install --progress-bar off babel
+        python -m pip install --quiet --progress-bar off --editable .
+
+        cd tests/getsig
+        javac getsig.java
+        cd ../..
+
+        set +x
+        export EXITVALUE=0
+        for testcase in tests/*.TestCase; do
+            if [ $testcase != tests/install.TestCase ]; then
+                printf "\n\n-------------------------------------\n$testcase\n"
+                python $testcase || export EXITVALUE=1
+            fi
+        done
+        exit $EXITVALUE
+    fi
+
+  # macOS
   - export HOMEBREW_CURL_RETRIES=10
   - brew update > /dev/null
   - if [ "`sw_vers -productVersion | sed 's,10\.\([0-9]*\).*,\1,'`" -ge 14 ]; then
