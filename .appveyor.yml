@@ -1,0 +1,41 @@
+version: '{build}'
+clone_depth: 1
+
+environment:
+  matrix:
+    # For Python versions available on AppVeyor, see
+    # https://www.appveyor.com/docs/lang/python/
+    - PYTHON: "C:\\Python37"
+    #- PYTHON: "C:\\Python37-x64"
+
+install:
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python -c \"import sys; print(sys.prefix)\""
+  - "python -c \"import sys; print(sys.exec_prefix)\""
+  - "python -c \"import sys; print(sys.executable)\""
+  - "python -c \"import platform; print(platform.win32_ver())\""
+  - "python -c \"import platform; print(platform.system())\""
+  - "python -c \"import platform; print(platform.release())\""
+  - "python -c \"import platform; print(platform.platform())\""
+  - "python -V -V"
+  - "python -m pip install --upgrade babel pip setuptools"
+  - "python -m pip install -e ."
+
+build: off
+
+test_script:
+#  - python tests/build.TestCase
+#  - python tests/checkupdates.TestCase
+  - python tests/common.TestCase
+  - python tests/exception.TestCase
+  - python tests/import.TestCase
+  - python tests/index.TestCase
+#  - python tests/install.TestCase
+  - python tests/lint.TestCase
+  - python tests/metadata.TestCase
+  - python tests/publish.TestCase
+  - python tests/rewritemeta.TestCase
+  - python tests/scanner.TestCase
+  - python tests/server.TestCase
+  - python tests/signatures.TestCase
+  - python tests/update.TestCase
