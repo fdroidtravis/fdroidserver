@@ -738,7 +738,7 @@ def parse_metadata(metadatapath):
         app.id = name
 
     if metadatapath.endswith('.yml'):
-        with open(metadatapath, 'r') as mf:
+        with open(metadatapath, 'r', encoding='utf-8') as mf:
             parse_yaml_metadata(mf, app)
     else:
         _warn_or_exception(_('Unknown metadata format: {path} (use: *.yml)')

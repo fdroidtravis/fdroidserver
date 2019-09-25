@@ -36,7 +36,7 @@ def proper_format(app):
     s = io.StringIO()
     # TODO: currently reading entire file again, should reuse first
     # read in metadata.py
-    with open(app.metadatapath, 'r') as f:
+    with open(app.metadatapath, 'r', encoding='utf-8') as f:
         cur_content = f.read()
     if app.metadatapath.endswith('.yml'):
         metadata.write_yaml(s, app)
