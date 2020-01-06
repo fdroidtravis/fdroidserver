@@ -4,14 +4,14 @@ language: java
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode12
-      env: ANDROID_SDK_ROOT=/usr/local/share/android-sdk
-      env: ANDROID_HOME=/usr/local/share/android-sdk
-    - os: osx
-      osx_image: xcode10.3
-      env: ANDROID_SDK_ROOT=/usr/local/share/android-sdk
-      env: ANDROID_HOME=/usr/local/share/android-sdk
+    # - os: osx
+    #   osx_image: xcode12
+    #   env: ANDROID_SDK_ROOT=/usr/local/share/android-sdk
+    #   env: ANDROID_HOME=/usr/local/share/android-sdk
+    # - os: osx
+    #   osx_image: xcode10.3
+    #   env: ANDROID_SDK_ROOT=/usr/local/share/android-sdk
+    #   env: ANDROID_HOME=/usr/local/share/android-sdk
     - os: windows
       language: bash
 
