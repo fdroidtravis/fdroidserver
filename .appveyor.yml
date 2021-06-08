@@ -1,5 +1,7 @@
 version: '{build}'
 clone_depth: 1
+# Visual image includes Android SDK https://www.appveyor.com/docs/windows-images-software/#xamarin
+os: Visual Studio 2019
 
 environment:
   matrix:
@@ -20,6 +22,9 @@ install:
   - "python -V -V"
   - "python -m pip install --upgrade babel pip setuptools"
   - "python -m pip install -e ."
+  - cd tests\getsig
+  - javac getsig.java
+  - cd ..\..
 
 build: off
 
